@@ -1,0 +1,6 @@
+{
+  "name": "recipie",
+  "short_name": "recipie",
+  "start_url": "/",
+  "display": "standalone"
+}
