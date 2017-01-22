@@ -1,13 +1,93 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="./singleRecipe-app.html">
+
 <dom-module id="recipie-app">
   <template>
     <style>
       :host {
         display: block;
       }
+
+      app-header{
+        background-color: #FFC107;
+        box-shadow: #111111 1px 0px 5px;
+        color: #ffffff;
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        z-index: 1;
+        width: 100%;
+      }
+      #SearchBox{
+        width: 100%;
+      }
+      #SearchBox > div > paper-button{
+        background-color: #FFB300;
+        color: #ffffff;
+
+      }
+      #SearchBox > div.card-action{
+        text-align: center;
+      }
+      #recipes{
+        width: 100%;
+      }
+      #recipes > div.card-content > paper-card{
+        width: 100%;
+
+      }
+      #recipes>div.card-content>paper-card>div.card-content>img{
+        width: 100%;
+      }
+      #recipes>div.card-content>paper-card>div.card-content{
+        text-align: left;
+       }
     </style>
-    <h2>Hello [[prop1]]</h2>
+    <app-header fixed>
+      <app-toolbar>
+        <div>PolyRecipe</div>
+      </app-toolbar>
+    </app-header>
+    <paper-card heading="Search" id="SearchBox">
+      <div class="card-content">
+        <paper-input label="recipe name" id="recipeName"></paper-input>
+        <paper-input label="ingredients" id="ingredients"></paper-input>
+        <sub>Comma separated</sub>
+
+      </div>
+      <div class="card-action">
+        <paper-button raised on-tap="_submitKeyWords">Submit</paper-button>
+        <br>
+      </div>
+    </paper-card>
+
+    <paper-card heading="Recipes" id="recipes">
+      <div class="card-content">
+        <paper-card>
+          <div class="card-content">
+            <img src="[[recipeImg]]">
+            <h3>[[recipeName]]</h3>
+          </div>
+        </paper-card>
+      </div>
+    </paper-card>
+    <byutv-jsonp
+            auto
+            url="[[url]]"
+            on-response="handleResponse"
+            debounce-duration="300"></byutv-jsonp>
+
   </template>
 
   <script>
@@ -16,11 +96,57 @@
       is: 'recipie-app',
 
       properties: {
-        prop1: {
-          type: String,
-          value: 'recipie-app',
+        recipeSearchName:{
+          type:String,
+          value:""
         },
+        recipeImg:{
+        type:String,
+        value:"http://www.recipepuppy.com/img/logonew.png"
       },
+      recipeName:{
+        type:String,
+        value:"Recipe name"
+      },
+        recipeIngredients:{
+          type:String,
+          value:""
+        },
+        recipes:{
+          type:Array,
+          value:[]
+        },
+        recipe:{
+          type:Object,
+          value:{recipeImg:this.recipeImg,recipeName:this.recipeName}
+        },
+        url:{
+          type:String
+        }
+      },_submitKeyWords:function(){
+        this.recipeSearchName=this.$.recipeName.value || null;
+        this.recipeIngredients=this.$.ingredients.value || null;
+        //console.log(this.recipeSearchName);
+//        var url="http://www.recipepuppy.com/api/?i=onions,garlic&q=omelet"
+//        var res = this.$.xhr.send({url: url});
+//        console.log(res);
+        $.ajax({
+          url: "https://ajax.googleapis.com/ajax/services/search/news?v=1.0&rsz=8&pz=1&cf=all&ned=in&hl=en&topic=tc",
+
+          jsonp: "callback",
+
+          // Tell jQuery we're expecting JSONP
+          dataType: "jsonp",
+
+          // Work with the response
+          success: function( response ) {
+            console.log(response); // server response
+
+          }
+        });
+        //this.url="http://www.recipepuppy.com/api/?i=onions,garlic&q=omelet"
+
+    }
 
     });
   </script>
